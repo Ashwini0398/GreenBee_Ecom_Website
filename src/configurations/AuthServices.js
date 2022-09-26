@@ -15,6 +15,14 @@ const headers = {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },
 };
+const headers1 = {
+  headers: {
+    "accept": "*/*",
+    // "Content-Type": "application/json",
+    // "cache-control": "no-cache",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+};
 const UserId = localStorage.getItem('UserId')
 
 export default class AuthServices {
@@ -50,7 +58,10 @@ export default class AuthServices {
     return axiosServices.Delete(baseURL + `api/admin/feedback/delete/${deleteId}`, true,headers);
   }
   deleteadminorderlist(deleteId) {
-    return axiosServices.Delete(baseURL  + `api/admin/order/delete/${deleteId}`,true,headers);
+    return axiosServices.Delete(baseURL  + `api/admin/order/delete/${deleteId}`,true,headers1);
+  }
+  deleteadminCustomerlist(deleteId) {
+    return axiosServices.Delete(baseURL  + `api/admin/user/delete/${deleteId}`,true,headers1);
   }
   AllCustomerListUser(data) {
     return axiosServices.post(baseURL+ `api/customer/product/all`, data, true,headers);
@@ -63,26 +74,32 @@ export default class AuthServices {
   AllOrdersCustomer(data) {
     return axiosServices.post(baseURL  + `api/customer/user/my-orders`, data, true,headers);
   }
-  InsertFeedback(data) {
-    return axiosServices.post(baseURL  + `api/feedback/save`,data, true,headers);
+
+  InsertFeedbackcustomer(data) {
+    return axiosServices.post(baseURL  + `api/customer/feedback/save`,data, true,headers);
   }
-  GetallFeedbackUser(UserId,data) {
-    return axiosServices.post(baseURL + `api/feedback/all/${UserId}` , data,true,headers);
+
+  GetallFeedbackUser(data) {
+    return axiosServices.post(baseURL + `api/customer/user/my-feedbacks` , data,true,headers);
   }
+  
   DeleteAdminData(deleteid) {
-    return axiosServices.Delete (baseURL + `api/admin/delete-order/${deleteid}`, true,headers);
+    return axiosServices.Delete(baseURL + `api/admin/delete-order/${deleteid}`, true,headers);
   }
 
-  SaveExporterDemand(data) {
-    return axiosServices.post(baseURL  + `api/exporter/SaveExporterDemand`, data, true,headers);
+  EditProfileDetails(data) {
+    return axiosServices.Patch(baseURL  + `api/customer/user/update`, data, true,headers);
   }
 
-  getAllExporterDetails(data) {
-    return axiosServices.post(baseURL  + `api/exporter/getAllExporterDetails`,data,true,headers);
+  DeleteFeedbackCustomer(feedbackId) {
+    return axiosServices.Delete(baseURL  + `api/customer/feedback/delete/${feedbackId}`,true,headers1);
   }
-  UpdateExporterStatus(data) {
-    return axiosServices.post(baseURL + `api/exporter/UpdateExporterStatus`,data, true,headers);
+
+
+  UpdateProductDetailsAdminStatus(data) {
+    return axiosServices.Put(baseURL + `/api/admin/product/update`,data, true,headers);
   }
+
   DeleteOrderExporter(UserId) {
     return axiosServices.Delete(baseURL + `api/exporter/delete-order/${UserId}`,  true,headers);
   }

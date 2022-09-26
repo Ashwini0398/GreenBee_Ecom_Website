@@ -81,7 +81,12 @@ export default class SignUp extends Component {
 
     if (this.state.EmailId === "") {
       this.setState({ EmailFlag: true });
+    } 
+    if ( this.state.MobileNo=== "") {
+      this.setState({MobileNoFlag: true });
     }
+    
+   
    
     if (this.state.Password === "") {
       this.setState({ PasswordFlag: true });
@@ -104,6 +109,7 @@ export default class SignUp extends Component {
         this.state.FirstName !== "" &&
         this.state.Password !== "" &&
         this.state.EmailId !== "" &&
+        this.state.MobileNo !== ""&&
         this.state.ConfirmPassword !== "" 
        
       ) {
@@ -111,6 +117,7 @@ export default class SignUp extends Component {
           "firstName": this.state.FirstName,
           "lastName": this.state.LastName,
           "email": this.state.EmailId,
+          "mobileNumber":  this.state.MobileNo,
           "password": this.state.Password,
           "confirmPassword": this.state.ConfirmPassword,
           "role": this.state.Role.toUpperCase()
@@ -186,6 +193,13 @@ handleChange = (e) => {
       EmailFlag: false
     })
   }
+
+  if(e.target.name === "MobileNo"){
+    this.setState({
+      MobileNo: e.target.value,
+      MobileNoFlag: false
+    })
+  }
   if (e.target.name === "ConfirmPassword") {
     this.setState({
       ConfirmPassword: e.target.value,
@@ -247,6 +261,17 @@ render() {
               style={{ margin: 10 }}
               error={this.state.EmailFlag}
               value={this.state.EmailId}
+              onChange={this.handleChange}
+            />
+             <TextField
+              className="TextField"
+              name="MobileNo"
+              label="MobileNo"
+              variant="outlined"
+              size="small"
+              style={{ margin: 10 }}
+              error={this.state.MobileNoFlag}
+              value={this.state.MobileNo}
               onChange={this.handleChange}
             />
 

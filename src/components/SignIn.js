@@ -79,10 +79,13 @@ export default class SignIn extends Component {
              localStorage.setItem("token", data.data.data.token);
             //  localStorage.setItem("UserId", data.data.data.user.userId);
             localStorage.setItem("firstName", data.data.data.user.firstName);
+            localStorage.setItem("lastName", data.data.data.user.lastName);
+            localStorage.setItem("Mobileno", data.data.data.user.mobileNumber);
             localStorage.setItem("email", data.data.data.user.email);
 
             if (data.data.data.user.role === "CUSTOMER") {
               localStorage.setItem("CustomerId", data.data.data.user.userId);
+             
 
               
               this.props.history.push("/CustomerDashboard");

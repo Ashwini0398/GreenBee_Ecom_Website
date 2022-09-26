@@ -16,13 +16,13 @@ export default class AxiosServices {
     return axios.delete(url, isRequiredHeader && header)
   }
 
-  put(url, data, isRequiredHeader = false, header) {
+  Put(url, data, isRequiredHeader = false, header) {
     console.log('Axios Url : ', url, ' Data : ', data, ' isRequiredHeader : ',isRequiredHeader, ' Header : ',header)
     return axios.put(url, data, isRequiredHeader && header)
   }
   
   Patch(url, data, isRequiredHeader = false, header) {
     console.log('Axios Url : ', url, ' Data : ', data, ' isRequiredHeader : ',isRequiredHeader, ' Header : ',header)
-    return axios.Patch(url, data, isRequiredHeader && header)
+    return axios.patch(url, data, isRequiredHeader && header)
   }
 }

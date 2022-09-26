@@ -125,10 +125,12 @@ class AdminDashboard extends Component {
       productDetile: "",
       ProductCompany: "",
       productIdSave: "",
+      ProdQuanity:"",
       bannerImageProduct: new FormData(),
 
 
       ProdtNameFlag: false,
+      ProdQuanityFlag:false,
       productTypeFlag: false,
       ProductPriceFlag: false,
       productDetilsFlag: false,
@@ -139,7 +141,7 @@ class AdminDashboard extends Component {
       OpenUserHome: true,
       tableDataProductListAdmin: true,
       tableDatCustomerListManagement: true,
-      FeedBackDetails:false
+      FeedBackDetails: false
 
 
 
@@ -150,7 +152,7 @@ class AdminDashboard extends Component {
   componentWillMount() {
 
     this.GetAllOrderDetails(this.state.PageNumber);
-    this.handleFeedBackAdmin(this.state.PageNumber)
+    // this.handleFeedBackAdmin(this.state.PageNumber)
 
   }
 
@@ -208,6 +210,29 @@ class AdminDashboard extends Component {
       });
   }
 
+  handledeleteCustomerListAdmin = (id) => {
+    authServices
+
+      .deleteadminCustomerlist(id)
+      .then((data) => {
+        console.log("filedata : ", data);
+        debugger
+        if (data.data !== null) {
+
+          this.setState({
+            OpenLoader: false,
+            OpenSnackBar: true,
+            Message: data.data.message
+          });
+          this.handleCustomerListData(this.state.PageNumber)
+
+        }
+      })
+      .catch((error) => {
+        console.log("GetUserAppointments Error : ", error);
+        this.setState({ OpenLoader: false });
+      });
+  }
 
 
 
@@ -215,7 +240,7 @@ class AdminDashboard extends Component {
 
 
 
- 
+
   handleInputChangeDeliveryboy = (e) => {
     let val = e.target.value
     if (e.target.name === "Firstname") {
@@ -333,7 +358,7 @@ class AdminDashboard extends Component {
 
   handleHomeNav = () => {
     this.setState({
-       OpenUserHome: true,
+      OpenUserHome: true,
       FeedBackDetails: false,
       CustomerListManagement: false,
       ProductListAdmin: false,
@@ -396,7 +421,7 @@ class AdminDashboard extends Component {
 
 
 
- 
+
 
 
   handlePluseIcon = () => {
@@ -440,8 +465,8 @@ class AdminDashboard extends Component {
   }
 
 
- 
- 
+
+
 
 
   handleCustomerListData = (CurrentPage) => {
@@ -480,7 +505,7 @@ class AdminDashboard extends Component {
 
   }
 
- 
+
 
   handleClose = () => {
     this.setState({
@@ -545,6 +570,12 @@ class AdminDashboard extends Component {
         productTypeFlag: false
       })
     }
+    if (e.target.name === "ProdQuanity") {
+      this.setState({
+        ProdQuanity: e.target.value,
+        ProdQuanityFlag: false
+      })
+    }
     if (e.target.name === "productDetile") {
       this.setState({
         productDetile: e.target.value,
@@ -569,7 +600,7 @@ class AdminDashboard extends Component {
 
 
   CheckValidationProductSell = () => {
-    const { ProdtName, ProductPrice, productType, ProductCompany, productDetile, bannerImageProduct, ProductCompanyFlag } = this.state
+    const { ProdtName, ProductPrice, productType, ProductCompany, productDetile, bannerImageProduct, ProdQuanity } = this.state
     console.log("CheckValidation Calling...");
 
 
@@ -588,6 +619,11 @@ class AdminDashboard extends Component {
     if (productType === "") {
       this.setState({
         productTypeFlag: true
+      })
+    }
+    if (ProdQuanity === "") {
+      this.setState({
+        ProdQuanityFlag: true
       })
     }
     if (productDetile === "") {
@@ -643,6 +679,7 @@ class AdminDashboard extends Component {
     fdataa.append("name", this.state.ProdtName);
     fdataa.append("price", this.state.ProductPrice);
     fdataa.append("type", this.state.productType)
+    fdataa.append("quantity", this.state.ProdQuanity)
     fdataa.append("details", this.state.productDetile)
     fdataa.append("company", this.state.ProductCompany)
     fdataa.append("bannerImage", this.state.bannerImageProduct)
@@ -660,6 +697,7 @@ class AdminDashboard extends Component {
             ProdtName: "",
             ProductPrice: "",
             productType: "",
+            ProdQuanity:"",
             productDetile: "",
             ProductCompany: "",
             bannerImageProduct: "",
@@ -683,18 +721,21 @@ class AdminDashboard extends Component {
     let FarmerID = localStorage.getItem("FarmerID")
     this.CheckValidationProductSell()
     let fdataa = new FormData();
+    let data=
+    {
+      "productId": this.state.productIdSave,
+      "name": this.state.ProdtName,
+      "type":this.state.productType,
+      "price":parseInt(this.state.ProductPrice),
+      "details":  this.state.productDetile,
+      "company": this.state.ProductCompany,
+      "quantity": this.state.ProdQuanity,
+      "imageUrl": this.state.bannerImageProduct.name
+    }
 
-    fdataa.append("name", this.state.ProdtName);
-    fdataa.append("price", this.state.ProductPrice);
-    fdataa.append("type", this.state.productType)
-    fdataa.append("details", this.state.productDetile)
-    fdataa.append("company", this.state.ProductCompany)
-    fdataa.append("bannerImage", this.state.bannerImageProduct)
+       authServices
 
-
-    authServices
-
-      .AddProductDetailsAdmin(fdataa)
+      .UpdateProductDetailsAdminStatus(data)
       .then((data) => {
         console.log("filedata : ", data);
         debugger
@@ -705,6 +746,7 @@ class AdminDashboard extends Component {
             ProductPrice: "",
             productType: "",
             productDetile: "",
+            ProdQuanity:"",
             ProductCompany: "",
             bannerImageProduct: "",
 
@@ -747,11 +789,12 @@ class AdminDashboard extends Component {
       });
   }
 
-  HandleEditProductDetails = (productId, name, bannerUrl, type, details, company, price) => {
+  HandleEditProductDetails = (productId, name, bannerUrl, type, details, company, price,quantity) => {
     this.setState({
       ProdtName: name,
       bannerImageProduct: bannerUrl,
       productType: type,
+      ProdQuanity:quantity,
 
       ProductPrice: price,
       ProductCompany: company,
@@ -792,26 +835,26 @@ class AdminDashboard extends Component {
   }
 
 
-  handledeleteFeedback=(id)=>{
+  handledeleteFeedback = (id) => {
     authServices
-    .deleteFeedback(id)
-    .then((data) => {
-      console.log("filedata : ", data);
-      debugger
-      if (data.data.success) {
+      .deleteFeedback(id)
+      .then((data) => {
+        console.log("filedata : ", data);
+        debugger
+        if (data.data.success) {
 
-        this.setState({
-          OpenLoader: false,
-          OpenSnackBar: true,
-          Message: data.data.message
-        });
-        this.GetAllAdminProductList(this.state.PageNumber)
-      }
-    })
-    .catch((error) => {
-      console.log("GetUserAppointments Error : ", error);
-      this.setState({ OpenLoader: false });
-    });
+          this.setState({
+            OpenLoader: false,
+            OpenSnackBar: true,
+            Message: data.data.message
+          });
+          this.handleFeedBackAdmin(this.state.PageNumber)
+        }
+      })
+      .catch((error) => {
+        console.log("GetUserAppointments Error : ", error);
+        this.setState({ OpenLoader: false });
+      });
   }
 
   handlePluseIconHome = () => {
@@ -834,7 +877,7 @@ class AdminDashboard extends Component {
     let self = this;
 
     const { OpenUserHome, ProductListData, OrderList, orderTableData, FeedBackDetailsData, CustomerListData, OpenSnackBar, Message, tableDatCustomerListManagement, PluseCustomerListManagement, tableDataDeliveryBoy, TiffinData, openModel,
-      FeedBackDetails, CustomerListManagement, ProductListAdmin, tableDataProductListAdmin, ProdtName, productType, ProductPrice, productDetile, ProductCompany, bannerImageProduct, ProdtNameFlag, productTypeFlag, ProductPriceFlag, productDetilsFlag, ProductCompanyFlag, Produ } = this.state
+      FeedBackDetails, CustomerListManagement, ProductListAdmin, tableDataProductListAdmin, ProdtName, productType, ProductPrice, productDetile, ProductCompany, bannerImageProduct, ProdtNameFlag, productTypeFlag, ProductPriceFlag, productDetilsFlag, ProductCompanyFlag, ProdQuanityFlag,ProdQuanity } = this.state
     console.log("state : ", state);
     const { classes } = this.props;
     return (
@@ -857,20 +900,8 @@ class AdminDashboard extends Component {
                   GreenBee (Admin)
 
                 </Typography>
-                <div className="search" style={{ flexGrow: 0.5 }}>
-                  <div className="searchIcon">
-                    <SearchIcon />
-                  </div>
-                  <InputBase
-                    placeholder="Search"
-                    classes={{
-                      root: "inputRoot",
-                      input: "inputInput",
-                    }}
-                    inputProps={{ "aria-label": "search" }}
-                  />
-                </div>
-
+               
+                <div>
                 <Button
                   color="inherit"
                   onClick={() => {
@@ -879,6 +910,7 @@ class AdminDashboard extends Component {
                 >
                   LogOut
                 </Button>
+                <h4>{localStorage.getItem("firstName")}</h4></div>
               </Toolbar>
             </AppBar>
           </div>
@@ -949,134 +981,125 @@ class AdminDashboard extends Component {
                       </div> */}
 
                       {OrderList &&
-                        <>
-                          <div className="GetUserMenus-SubContainerAdmin ">
-                            <TableContainer component={Paper}>
-                              <Table className="" aria-label="simple table">
-                                {/* {props.State === "UserHome" ? ( */}
-                                <>
-                                  <TableHead></TableHead>
-                                  <TableHead>
-                                    <TableRow>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 50, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Order ID
-                                      </TableCell>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 200, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Product Name
-                                      </TableCell>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 100, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Order image
-                                      </TableCell>
+                        <>  <div className="GetUserMenus-SubContainerAdmin ">
+                          <TableContainer component={Paper}>
+                            <Table className="" aria-label="simple table">
+                              {/* {props.State === "UserHome" ? ( */}
+                              <>
+                                <TableHead></TableHead>
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 50, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Order ID
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 200, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Product Name
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 100, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Order image
+                                    </TableCell>
 
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        productType
-                                      </TableCell>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Unit
-                                      </TableCell>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Mfg Date
-                                      </TableCell>
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Exp Date
-                                      </TableCell>
-
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Total Price
-                                      </TableCell>
-
-                                      <TableCell
-                                        align="center"
-                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Action
-                                      </TableCell>
-
-                                    </TableRow>
-                                  </TableHead>
-                                </>
-                                {/* ) : ( */}
-                                <></>
-                                {/* )} */}
-                                <TableBody>
-                                  {orderTableData.length > 0
-                                    ? orderTableData.map((data, index) => {
-                                      return (
-                                        <TableRow >
-                                          {/* {props.State === "UserHome" ? ( */}
-                                          <>
-                                            <TableCell align="center" style={{ width: 200 }}>
-                                              {data.id}
-
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 200 }}>
-                                              {data.product.productName}
-
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              <img className="bannerurl" src={data.product.imageUrl} alt="Girl in a jacket" />
-
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              {data.productType}
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              {data.unit}
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              {moment(data.product.mfgDate).format("DD-MM-YYYY").toString()}
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              {moment(data.product.expDate).format("DD-MM-YYYY").toString()}
-
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              {data.totalPrice}
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteAdminOrderList(data.id)} />
-
-                                            </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Price
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Address
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Payment Type
+                                    </TableCell>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Customer Name
+                                    </TableCell>
 
 
-                                          </>
-                                          {/* ) : ( */}
-                                          <></>
-                                          {/* )} */}
-                                        </TableRow>
-                                      );
-                                    })
-                                    : null}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
+                                    <TableCell
+                                      align="center"
+                                      style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                    >
+                                      Actions
+                                    </TableCell>
 
+                                  </TableRow>
+                                </TableHead>
+                              </>
+                              {/* ) : ( */}
+                              <></>
+                              {/* )} */}
+                              <TableBody>
+                                {orderTableData.length > 0
+                                  ? orderTableData.map((data, index) => {
+                                    return (
+                                      <TableRow >
+                                        {/* {props.State === "UserHome" ? ( */}
+                                        <>
+                                          <TableCell align="center" style={{ width: 200 }}>
+                                            {data.orderId}
 
-                          </div>
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 200 }}>
+                                            {data.product.name}
+
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            <img className="bannerurl" src={data.product.imageUrl} alt="Girl in a jacket" />
+
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            {data.product.price}
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            {data.address}
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            {data.payment.paymentMode}
+                                          </TableCell>
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            {data.user.firstName}
+
+                                          </TableCell>
+
+                                          <TableCell align="center" style={{ width: 100 }}>
+                                            <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteAdminOrderList(data.id)} />
+
+                                          </TableCell>
+                                          {/* <TableCell align="center" style={{ width: 100 }}>
+                                          {data.totalPrice}1213132314
+                                        </TableCell> */}
+
+                                        </>
+                                        {/* ) : ( */}
+                                        <></>
+                                        {/* )} */}
+                                      </TableRow>
+                                    );
+                                  })
+                                  : null}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        </div>
 
 
                         </>
@@ -1089,96 +1112,91 @@ class AdminDashboard extends Component {
 
                   }
                   {FeedBackDetails &&
-                    <>
+                    <>                      {/* <div className="deliveryboybtn mb-4">Delivery Boy <ControlPointIcon onClick={() => this.handlePluseIcon()} /> </div> */}
+                      <div className="GetUserMenus-SubContainerAdmin">
+                        <TableContainer component={Paper}>
+                          <Table className="tableDeliveryboy" aria-label="simple table">
+
+                            <>
+                              <TableHead></TableHead>
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell
+                                    align="Left"
+                                    style={{ width: 100, fontWeight: 600, fontSize: 15 }}
+                                  >
+                                    Id
+                                  </TableCell>
+                                  <TableCell
+                                    align="Left"
+                                    style={{ width: 100, fontWeight: 600, fontSize: 15 }}
+                                  >
+                                    Customer Name
+                                  </TableCell>
+                                  <TableCell
+                                    align="Left"
+                                    style={{ width: 150, fontWeight: 600, fontSize: 15 }}
+                                  >
+                                    Product Name
+                                  </TableCell>
+                                  <TableCell
+                                    align="Left"
+                                    style={{ width: 193, fontWeight: 600, fontSize: 15 }}
+                                  >
+                                    Feedback
+                                  </TableCell>
+                                  <TableCell
+                                    align="Left"
+                                    style={{ width: 193, fontWeight: 600, fontSize: 15 }}
+                                  >
+                                    Action
+                                  </TableCell>
 
 
-                     
+                                </TableRow>
+                              </TableHead>
+                            </>
 
-                          {/* <div className="deliveryboybtn mb-4">Delivery Boy <ControlPointIcon onClick={() => this.handlePluseIcon()} /> </div> */}
-                          <div className="GetUserMenus-SubContainerAdmin">
-                            <TableContainer component={Paper}>
-                              <Table className="tableDeliveryboy" aria-label="simple table">
+                            <TableBody>
+                              {FeedBackDetailsData.length > 0
+                                ? FeedBackDetailsData.map((data, index) => {
+                                  return (
+                                    <TableRow key={index}>
 
-                                <>
-                                  <TableHead></TableHead>
-                                  <TableHead>
-                                    <TableRow>
-                                      <TableCell
-                                        align="Left"
-                                        style={{ width: 100, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Id
-                                      </TableCell>
-                                      <TableCell
-                                        align="Left"
-                                        style={{ width: 100, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Customer Name
-                                      </TableCell>
-                                      <TableCell
-                                        align="Left"
-                                        style={{ width: 150, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Product Name
-                                      </TableCell>
-                                      <TableCell
-                                        align="Left"
-                                        style={{ width: 193, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Feedback
-                                      </TableCell>
-                                      <TableCell
-                                        align="Left"
-                                        style={{ width: 193, fontWeight: 600, fontSize: 15 }}
-                                      >
-                                        Action
-                                      </TableCell>
+                                      <>
+                                        <TableCell align="Left" style={{ width: 200 }}>
+                                          {data.feedbackId}
+                                        </TableCell>
+                                        <TableCell align="Left" style={{ width: 200 }}>
+                                          {data.user.firstName}
+                                        </TableCell>
+                                        <TableCell align="Left" style={{ width: 200 }}>
+                                          {data.product.name}
+                                        </TableCell>
+                                        <TableCell align="Left" style={{ width: 100 }}>
+                                          {data.feedback}
+                                        </TableCell>
+                                        <TableCell align="Left" style={{ width: 100 }}>
+                                          <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteFeedback(data.feedbackId)} />
+
+                                        </TableCell>
 
 
+                                      </>
+
+                                      {/* )} */}
                                     </TableRow>
-                                  </TableHead>
-                                </>
-
-                                <TableBody>
-                                  {FeedBackDetailsData.length > 0
-                                    ? FeedBackDetailsData.map((data, index) => {
-                                      return (
-                                        <TableRow key={index}>
-
-                                          <>
-                                            <TableCell align="Left" style={{ width: 200 }}>
-                                              {data.id}
-                                            </TableCell>
-                                            <TableCell align="Left" style={{ width: 200 }}>
-                                              {data.user.firstName}
-                                            </TableCell>
-                                            <TableCell align="Left" style={{ width: 200 }}>
-                                              {data.product.productName}
-                                            </TableCell>
-                                            <TableCell align="Left" style={{ width: 100 }}>
-                                              {data.review}
-                                            </TableCell>
-                                            <TableCell align="center" style={{ width: 100 }}>
-                                              <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteFeedback(data.id)} />
-
-                                            </TableCell>
+                                  );
+                                })
+                                : null}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </div>
+                    </>
 
 
-                                          </>
-
-                                          {/* )} */}
-                                        </TableRow>
-                                      );
-                                    })
-                                    : null}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
-                          </div>
-                        </>
-                    
-
-                   }
+                  }
 
                   {CustomerListManagement &&
                     <>
@@ -1222,14 +1240,20 @@ class AdminDashboard extends Component {
                                         align="Left"
                                         style={{ width: 193, fontWeight: 600, fontSize: 15 }}
                                       >
-                                      Created on
+                                        Created on
                                       </TableCell>
-                                     
+
                                       <TableCell
                                         align="Left"
                                         style={{ width: 100, fontWeight: 600, fontSize: 15 }}
                                       >
                                         Role
+                                      </TableCell>
+                                      <TableCell
+                                        align="Left"
+                                        style={{ width: 100, fontWeight: 600, fontSize: 15 }}
+                                      >
+                                        Action
                                       </TableCell>
 
 
@@ -1263,10 +1287,10 @@ class AdminDashboard extends Component {
                                             <TableCell align="Left" style={{ width: 100 }}>
                                               {data.role}
                                             </TableCell>
-                                            {/* <TableCell align="center" style={{ width: 100 }}>
-                                              <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteAdmin(data.id)} />
+                                            <TableCell align="center" style={{ width: 100 }}>
+                                              <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteCustomerListAdmin(data.userId)} />
 
-                                            </TableCell> */}
+                                            </TableCell>
 
                                           </>
 
@@ -1330,6 +1354,12 @@ class AdminDashboard extends Component {
                                         align="center"
                                         style={{ width: 210, fontWeight: 600, fontSize: 15 }}
                                       >
+                                        Product Quantity
+                                      </TableCell>
+                                      <TableCell
+                                        align="center"
+                                        style={{ width: 210, fontWeight: 600, fontSize: 15 }}
+                                      >
                                         Product Description
                                       </TableCell>
                                       <TableCell
@@ -1382,6 +1412,9 @@ class AdminDashboard extends Component {
                                               {data.type}
                                             </TableCell>
                                             <TableCell align="center" style={{ width: 100 }}>
+                                              {data.quantity}
+                                            </TableCell>
+                                            <TableCell align="center" style={{ width: 100 }}>
                                               {data.details}
                                             </TableCell>
                                             <TableCell align="center" style={{ width: 100 }}>
@@ -1394,7 +1427,7 @@ class AdminDashboard extends Component {
 
 
                                             <TableCell align="center" style={{ width: 100 }}>
-                                              <CreateIcon style={{ cursor: "pointer" }} onClick={() => this.HandleEditProductDetails(data.productId, data.name, data.bannerUrl, data.type, data.details, data.company, data.price)} />
+                                              <CreateIcon style={{ cursor: "pointer" }} onClick={() => this.HandleEditProductDetails(data.productId, data.name, data.bannerUrl, data.type, data.details, data.company, data.price,data.quantity)} />
 
                                               <DeleteIcon style={{ cursor: "pointer" }} onClick={() => this.handledeleteAdminProduct(data.productId)} />
 
@@ -1454,6 +1487,18 @@ class AdminDashboard extends Component {
                                     style={{ margin: 20 }}
                                     error={productTypeFlag}
                                     value={productType}
+                                    onChange={(e) => this.handleInputChangeProductSell(e)}
+                                  />
+                                  <TextField
+
+                                    className="TextField1"
+                                    name="ProdQuanity"
+                                    label="Product Quantity"
+                                    variant="outlined"
+                                    size="small"
+                                    style={{ margin: 20 }}
+                                    error={ProdQuanityFlag}
+                                    value={ProdQuanity}
                                     onChange={(e) => this.handleInputChangeProductSell(e)}
                                   />
                                   <TextField

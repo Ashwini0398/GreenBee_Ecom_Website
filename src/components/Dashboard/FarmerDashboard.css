@@ -314,6 +314,10 @@
   margin-top: 20px;
 
 }
+.AboutUsPage{
+  color: #000000;
+  padding: 83px;
+}
 
 .bodyContent {
   background-color: #cbffcbaf;
@@ -383,13 +387,17 @@
   margin-top: 20px;
   margin-bottom: 10px;
   cursor: pointer;
+  width: 84px;
 
 }
-
+.divBtn{
+  display: flex;
+  justify-content: space-around;
+}
 .cancelbhn {
   background-color: #e4e4e4;
   color: #000000;
-
+  width: 58px;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #000000 !important;
